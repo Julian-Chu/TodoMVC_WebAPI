@@ -13,4 +13,9 @@ Scenario: Retrieving TodoItem that does not exist
 	When it is retrieved
 	Then Http status 404 should be returned
 
+Scenario: Retrieving all existing TodoItems
+	Given existing issues
+	When all items are retrieved
+	Then Http status 200 should be returned
+	Then all items are returned
 	

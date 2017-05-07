@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Results;
 using TechTalk.SpecFlow;
@@ -11,6 +12,8 @@ namespace TodoMVC_WebAPI.Tests.steps
     [Binding]
     public class TodoItemsControllerSteps
     {
+        TodoMvcDbContext context = new TodoMvcDbContext();
+
         [Given(@"id equals (.*) for existing description")]
         public void GivenIdEqualsForExistingDescription(int id)
         {
@@ -31,18 +34,28 @@ namespace TodoMVC_WebAPI.Tests.steps
             var controller = new TodoItemsController();
             var response = controller.GetTodoItem(id);
             ScenarioContext.Current.Set<IHttpActionResult>(response, "response");
+            ScenarioContext.Current.Set<bool>(false, "IsGetAllItem");
         }
-        
+
         [Then(@"Http status (.*) should be returned")]
         public void ThenHttpStatusShouldBeReturned(int httpStatusCode)
         {
+            bool IsGetAllItem = ScenarioContext.Current.Get<bool>("IsGetAllItem");
+
             if (httpStatusCode == 200)
             {
-                var response = ScenarioContext.Current.Get<IHttpActionResult>("response");
-                Assert.IsInstanceOfType(response, typeof(OkNegotiatedContentResult<TodoItem>));
+                if (IsGetAllItem)
+                {
+                }
+                else
+                {
+                    var response = ScenarioContext.Current.Get<IHttpActionResult>("response");
+                    Assert.IsInstanceOfType(response, typeof(OkNegotiatedContentResult<TodoItem>));
+                }
 
             }
-            else if(httpStatusCode == 404)
+
+            else if (httpStatusCode == 404)
             {
                 var response = ScenarioContext.Current.Get<IHttpActionResult>("response");
                 Assert.IsInstanceOfType(response, typeof(NotFoundResult));
@@ -51,7 +64,7 @@ namespace TodoMVC_WebAPI.Tests.steps
             {
                 Assert.Fail();
             }
-            
+
         }
 
         [Then(@"Response context contains ""(.*)""")]
@@ -60,9 +73,30 @@ namespace TodoMVC_WebAPI.Tests.steps
             var response = ScenarioContext.Current.Get<IHttpActionResult>("response");
             var ContentResult = response as OkNegotiatedContentResult<TodoItem>;
             Assert.IsTrue(ContentResult.Content.Description.Contains(description));
-            
-
         }
+
+        [Given(@"existing issues")]
+        public void GivenExistingIssues()
+        {
+        }
+
+        [When(@"all items are retrieved")]
+        public void WhenAllItemsAreRetrieved()
+        {
+            var controller = new TodoItemsController();
+            var response = controller.GetTodoItems();
+            ScenarioContext.Current.Set<IQueryable<TodoItem>>(response, "response");
+            ScenarioContext.Current.Set<bool>(true, "IsGetAllItem");
+        }
+
+        [Then(@"all items are returned")]
+        public void ThenAllItemsAreReturned()
+        {
+            var items = ScenarioContext.Current.Get<IQueryable<TodoItem>>("response");
+            int expectedCount = 3;
+            Assert.AreEqual(expectedCount, items.Count());
+        }
+
 
     }
 }
