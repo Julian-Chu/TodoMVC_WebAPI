@@ -247,6 +247,14 @@
     <Compile Include="Migrations\201705071539382_AddCompletedColumnInTodoItemsTable.Designer.cs">
       <DependentUpon>201705071539382_AddCompletedColumnInTodoItemsTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705071544160_ModifyDescriptioncolumnToNotNullableInTodoItemsTable.cs" />
+    <Compile Include="Migrations\201705071544160_ModifyDescriptioncolumnToNotNullableInTodoItemsTable.Designer.cs">
+      <DependentUpon>201705071544160_ModifyDescriptioncolumnToNotNullableInTodoItemsTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201705071554538_ModifyDescriptioncolumnToNotNullableInTodoItemsTable1.cs" />
+    <Compile Include="Migrations\201705071554538_ModifyDescriptioncolumnToNotNullableInTodoItemsTable1.Designer.cs">
+      <DependentUpon>201705071554538_ModifyDescriptioncolumnToNotNullableInTodoItemsTable1.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -334,6 +342,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705071539382_AddCompletedColumnInTodoItemsTable.resx">
       <DependentUpon>201705071539382_AddCompletedColumnInTodoItemsTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705071544160_ModifyDescriptioncolumnToNotNullableInTodoItemsTable.resx">
+      <DependentUpon>201705071544160_ModifyDescriptioncolumnToNotNullableInTodoItemsTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705071554538_ModifyDescriptioncolumnToNotNullableInTodoItemsTable1.resx">
+      <DependentUpon>201705071554538_ModifyDescriptioncolumnToNotNullableInTodoItemsTable1.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

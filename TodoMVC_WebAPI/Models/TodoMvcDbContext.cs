@@ -10,10 +10,18 @@ namespace TodoMVC_WebAPI.Models
     {
         public DbSet<TodoItem> TodoItems { get; set; }
 
-        public TodoMvcDbContext():base("name=LocalConnection")
-        {
+        public TodoMvcDbContext():base("name=LocalConnection"){}
 
+        protected override void OnModelCreating(DbModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<TodoItem>()
+                .Property(m => m.Description)
+                .IsRequired()
+                .HasMaxLength(255);
+            
+            base.OnModelCreating(modelBuilder);
         }
-        
+
+
     }
 }
