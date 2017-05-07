@@ -243,6 +243,10 @@
     <Compile Include="Migrations\201705071532174_Init.Designer.cs">
       <DependentUpon>201705071532174_Init.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705071539382_AddCompletedColumnInTodoItemsTable.cs" />
+    <Compile Include="Migrations\201705071539382_AddCompletedColumnInTodoItemsTable.Designer.cs">
+      <DependentUpon>201705071539382_AddCompletedColumnInTodoItemsTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -327,6 +331,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201705071532174_Init.resx">
       <DependentUpon>201705071532174_Init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705071539382_AddCompletedColumnInTodoItemsTable.resx">
+      <DependentUpon>201705071539382_AddCompletedColumnInTodoItemsTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
