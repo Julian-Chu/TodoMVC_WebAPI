@@ -16,7 +16,14 @@ namespace TodoMVC_WebAPI.Tests.steps
         {
             ScenarioContext.Current.Set<int>(id, "id");
         }
-        
+
+        [Given(@"id equals (.*) for non-existing description")]
+        public void GivenIdEqualsForNon_ExistingDescription(int id)
+        {
+            ScenarioContext.Current.Set<int>(id, "id");
+        }
+
+
         [When(@"it is retrieved")]
         public void WhenItIsRetrieved()
         {
@@ -34,6 +41,11 @@ namespace TodoMVC_WebAPI.Tests.steps
                 var response = ScenarioContext.Current.Get<IHttpActionResult>("response");
                 Assert.IsInstanceOfType(response, typeof(OkNegotiatedContentResult<TodoItem>));
 
+            }
+            else if(httpStatusCode == 404)
+            {
+                var response = ScenarioContext.Current.Get<IHttpActionResult>("response");
+                Assert.IsInstanceOfType(response, typeof(NotFoundResult));
             }
             else
             {
