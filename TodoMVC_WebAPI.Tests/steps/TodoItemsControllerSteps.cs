@@ -1,10 +1,8 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+using System.Collections.Generic;
 using System.Linq;
-using System.Web.Http;
-using System.Web.Http.Results;
+using System.Net.Http;
 using TechTalk.SpecFlow;
-using TodoMVC_WebAPI.Controllers.Api;
 using TodoMVC_WebAPI.Models;
 
 namespace TodoMVC_WebAPI.Tests.steps
@@ -12,7 +10,10 @@ namespace TodoMVC_WebAPI.Tests.steps
     [Binding]
     public class TodoItemsControllerSteps
     {
-        TodoMvcDbContext context = new TodoMvcDbContext();
+        private static HttpClient client = new HttpClient();
+
+        private readonly string localUrl = "http://localhost:2000/api";  
+
 
         [Given(@"id equals (.*) for existing description")]
         public void GivenIdEqualsForExistingDescription(int id)
@@ -26,14 +27,14 @@ namespace TodoMVC_WebAPI.Tests.steps
             ScenarioContext.Current.Set<int>(id, "id");
         }
 
-
         [When(@"it is retrieved")]
         public void WhenItIsRetrieved()
         {
             int id = ScenarioContext.Current.Get<int>("id");
-            var controller = new TodoItemsController();
-            var response = controller.GetTodoItem(id);
-            ScenarioContext.Current.Set<IHttpActionResult>(response, "response");
+
+            var response = client.GetAsync($"{localUrl}/TodoItems/{id}").Result;
+
+            ScenarioContext.Current.Set<HttpResponseMessage>(response, "response");
             ScenarioContext.Current.Set<bool>(false, "IsGetAllItem");
         }
 
@@ -41,38 +42,30 @@ namespace TodoMVC_WebAPI.Tests.steps
         public void ThenHttpStatusShouldBeReturned(int httpStatusCode)
         {
             bool IsGetAllItem = ScenarioContext.Current.Get<bool>("IsGetAllItem");
+            var response = ScenarioContext.Current.Get<HttpResponseMessage>("response");
 
-            if (httpStatusCode == 200)
+            switch (httpStatusCode)
             {
-                if (IsGetAllItem)
-                {
-                }
-                else
-                {
-                    var response = ScenarioContext.Current.Get<IHttpActionResult>("response");
-                    Assert.IsInstanceOfType(response, typeof(OkNegotiatedContentResult<TodoItem>));
-                }
+                case 200:
+                    Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
+                    break;
 
+                case 404:
+                    Assert.AreEqual(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+                    break;
+                default:
+                    break;
             }
-
-            else if (httpStatusCode == 404)
-            {
-                var response = ScenarioContext.Current.Get<IHttpActionResult>("response");
-                Assert.IsInstanceOfType(response, typeof(NotFoundResult));
-            }
-            else
-            {
-                Assert.Fail();
-            }
-
         }
 
         [Then(@"Response context contains ""(.*)""")]
         public void ThenResponseContextContains(string description)
         {
-            var response = ScenarioContext.Current.Get<IHttpActionResult>("response");
-            var ContentResult = response as OkNegotiatedContentResult<TodoItem>;
-            Assert.IsTrue(ContentResult.Content.Description.Contains(description));
+            TodoItem item;
+            var response = ScenarioContext.Current.Get<HttpResponseMessage>("response");
+            item = response.Content.ReadAsAsync<TodoItem>().Result;
+
+            Assert.IsTrue(item.Description.Contains(description));
         }
 
         [Given(@"existing issues")]
@@ -83,20 +76,20 @@ namespace TodoMVC_WebAPI.Tests.steps
         [When(@"all items are retrieved")]
         public void WhenAllItemsAreRetrieved()
         {
-            var controller = new TodoItemsController();
-            var response = controller.GetTodoItems();
-            ScenarioContext.Current.Set<IQueryable<TodoItem>>(response, "response");
-            ScenarioContext.Current.Set<bool>(true, "IsGetAllItem");
+            var response = client.GetAsync($"{localUrl}/TodoItems").Result;
+
+            ScenarioContext.Current.Set<HttpResponseMessage>(response, "response");
+            ScenarioContext.Current.Set<bool>(false, "IsGetAllItem");
         }
 
         [Then(@"all items are returned")]
         public void ThenAllItemsAreReturned()
         {
-            var items = ScenarioContext.Current.Get<IQueryable<TodoItem>>("response");
+            var response = ScenarioContext.Current.Get<HttpResponseMessage>("response");
+            var items = response.Content.ReadAsAsync(typeof(IEnumerable<TodoItem>)).Result as IEnumerable<TodoItem>;
+
             int expectedCount = 3;
             Assert.AreEqual(expectedCount, items.Count());
         }
-
-
     }
 }
