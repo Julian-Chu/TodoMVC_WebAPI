@@ -48,7 +48,6 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
             int id = 100;
             //Act
             var items = controller.GetTodoItem(id);
-
             //Assert
             Assert.IsInstanceOfType(items, typeof(NotFoundResult));
         }
