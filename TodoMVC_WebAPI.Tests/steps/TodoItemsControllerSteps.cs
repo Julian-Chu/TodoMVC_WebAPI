@@ -12,8 +12,21 @@ namespace TodoMVC_WebAPI.Tests.steps
     {
         private static HttpClient client = new HttpClient();
 
-        private readonly string localUrl = "http://localhost:2000/api";  
+        private readonly string localUrl = "http://localhost:2000/api";
 
+        private TodoMvcDbContext context;
+
+        [BeforeScenario]
+        public void ClearAndAddNewDataIntoDB()
+        {
+            using (context = new TodoMvcDbContext("TestDbConnection"))
+            {
+                context.Database.ExecuteSqlCommand("TRUNCATE TABLE TodoItems");
+                context.Database.ExecuteSqlCommand("Insert into TodoItems(Description,Completed) VALUES('test description 1', 0)");
+                //context.Database.ExecuteSqlCommand("INSERT INTO TodoItems Values('test description 2', false)");
+                //context.Database.ExecuteSqlCommand("INSERT INTO TodoItems Values('test description 3', false)");
+            }
+        }
 
         [Given(@"id equals (.*) for existing description")]
         public void GivenIdEqualsForExistingDescription(int id)

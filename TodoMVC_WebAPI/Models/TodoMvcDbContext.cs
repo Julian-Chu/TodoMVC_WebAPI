@@ -11,9 +11,9 @@ namespace TodoMVC_WebAPI.Models
         public DbSet<TodoItem> TodoItems { get; set; }
                                             
         public TodoMvcDbContext():base("LocalConnection") {}
-        public TodoMvcDbContext(string connnectionString)
+        public TodoMvcDbContext(string connnectionString):base(connnectionString)
         {
-
+            Database.SetInitializer(new DropCreateDatabaseIfModelChanges<TodoMvcDbContext>());
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
