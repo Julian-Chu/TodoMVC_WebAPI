@@ -8,7 +8,7 @@ namespace TodoMVC_WebAPI.Models
 {
     public class TodoMvcDbContext:DbContext
     {
-        public DbSet<TodoItem> TodoItems { get; set; }
+        public virtual DbSet<TodoItem> TodoItems { get; set; }
                                             
         public TodoMvcDbContext():base("LocalConnection") {}
         public TodoMvcDbContext(string connnectionString):base(connnectionString)

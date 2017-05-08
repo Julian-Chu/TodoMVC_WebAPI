@@ -12,12 +12,13 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
     public class TodoItemsControllerTests
     {
         [TestMethod()]
-        public void GetTodoItemsTest()
+        public void GetTodoItems_Return_allItems()
         {
             //Assign
             StubTodoItemsControllers controller = new StubTodoItemsControllers();
             //Act
             var items = controller.GetTodoItems();
+
             int itemsCount = 3;
 
             //Assert
@@ -74,7 +75,7 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
     public class StubTodoItemsControllers : TodoItemsController
     {
         private IQueryable<TodoItem> stubItems;
-        private DbSet<TodoItem> stubDbSet;
+        private IDbSet<TodoItem> stubDbSet;
 
         public StubTodoItemsControllers()
         {
@@ -82,10 +83,10 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
             stubItems = getTodoItems().AsQueryable();
 
             stubDbSet = Substitute.For<DbSet<TodoItem>, IDbSet<TodoItem>>();
-            //stubDbSet.Provider.Returns(stubItems.Provider);
-            //stubDbSet.Expression.Returns(stubItems.Expression);
-            //stubDbSet.ElementType.Returns(stubItems.ElementType);
-            //stubDbSet.GetEnumerator().Returns(stubItems.GetEnumerator());
+            stubDbSet.Provider.Returns(stubItems.Provider);
+            stubDbSet.Expression.Returns(stubItems.Expression);
+            stubDbSet.ElementType.Returns(stubItems.ElementType);
+            stubDbSet.GetEnumerator().Returns(stubItems.GetEnumerator());
             stubDbSet.Find(Arg.Any<int>()).Returns(callinfo =>
             {
                 object[] idValues = callinfo.Arg<object[]>();
@@ -94,7 +95,7 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
             });
 
             db = Substitute.For<TodoMvcDbContext>();
-            db.TodoItems = stubDbSet;
+            db.TodoItems.Returns(stubDbSet);
         }
 
         public List<TodoItem> getTodoItems()
