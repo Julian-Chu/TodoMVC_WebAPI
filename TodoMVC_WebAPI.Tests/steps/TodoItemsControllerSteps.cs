@@ -17,14 +17,24 @@ namespace TodoMVC_WebAPI.Tests.steps
         private TodoMvcDbContext context;
 
         [BeforeScenario]
-        public void ClearAndAddNewDataIntoDB()
+        public void ClearAndAddNewDataIntoTestDB()
         {
             using (context = new TodoMvcDbContext("TestDbConnection"))
             {
                 context.Database.ExecuteSqlCommand("TRUNCATE TABLE TodoItems");
                 context.Database.ExecuteSqlCommand("Insert into TodoItems(Description,Completed) VALUES('test description 1', 0)");
-                //context.Database.ExecuteSqlCommand("INSERT INTO TodoItems Values('test description 2', false)");
-                //context.Database.ExecuteSqlCommand("INSERT INTO TodoItems Values('test description 3', false)");
+                context.Database.ExecuteSqlCommand("INSERT INTO TodoItems Values('test description 2', 0)");
+                context.Database.ExecuteSqlCommand("INSERT INTO TodoItems Values('test description 3', 0)");
+                context.Database.ExecuteSqlCommand("INSERT INTO TodoItems Values('test description 4', 0)");
+            }
+        }
+
+        [AfterScenario]
+        public void ClearTestDB()
+        {
+            using (context = new TodoMvcDbContext("TestDbConnection"))
+            {
+                context.Database.ExecuteSqlCommand("TRUNCATE TABLE TodoItems");       
             }
         }
 
@@ -66,6 +76,7 @@ namespace TodoMVC_WebAPI.Tests.steps
                 case 404:
                     Assert.AreEqual(System.Net.HttpStatusCode.NotFound, response.StatusCode);
                     break;
+
                 default:
                     break;
             }
@@ -101,7 +112,7 @@ namespace TodoMVC_WebAPI.Tests.steps
             var response = ScenarioContext.Current.Get<HttpResponseMessage>("response");
             var items = response.Content.ReadAsAsync(typeof(IEnumerable<TodoItem>)).Result as IEnumerable<TodoItem>;
 
-            int expectedCount = 3;
+            int expectedCount = 4;
             Assert.AreEqual(expectedCount, items.Count());
         }
     }

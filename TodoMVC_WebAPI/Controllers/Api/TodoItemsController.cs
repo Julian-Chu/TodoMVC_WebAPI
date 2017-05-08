@@ -14,7 +14,7 @@ namespace TodoMVC_WebAPI.Controllers.Api
 {
     public class TodoItemsController : ApiController
     {
-        private TodoMvcDbContext db = new TodoMvcDbContext();
+        private TodoMvcDbContext db = new TodoMvcDbContext("TestDbConnection");
 
         // GET: api/TodoItems
         public IQueryable<TodoItem> GetTodoItems()
