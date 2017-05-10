@@ -3,6 +3,7 @@ using NSubstitute;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Web.Http;
 using System.Web.Http.Results;
 using TodoMVC_WebAPI.Models;
 
@@ -33,12 +34,11 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
             StubTodoItemsControllers controller = new StubTodoItemsControllers();
             int id = 1;
             //Act
-            var item = controller.GetTodoItem(id);
-            var result = item as OkNegotiatedContentResult<TodoItem>;
-
+            var item = controller.GetTodoItem(id) as OkNegotiatedContentResult<TodoItem>;
+            
             //Assert
             Assert.IsInstanceOfType(item, typeof(OkNegotiatedContentResult<TodoItem>));
-            Assert.IsTrue(result.Content.Description.Contains("test description"));
+            Assert.IsTrue(item.Content.Description.Contains("test description"));
         }
 
         [TestMethod()]
@@ -56,7 +56,7 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
         [TestMethod()]
         public void PutTodoItemTest()
         {
-            Assert.Fail();
+            Assert.Inconclusive();
         }
 
         [TestMethod()]
@@ -72,40 +72,56 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
             Assert.AreEqual(4 , controller.getItemCountInMockDB());
         }
 
+        [TestMethod]
+        public void PostTodoItem_invalidedModel_Return_InvalidModelStateResult()
+        {
+            //Assign
+            StubTodoItemsControllers controller = new StubTodoItemsControllers();
+            controller.ModelState.AddModelError("invalid", "Invalid Model");
+            TodoItem item = new TodoItem() { Description = "test" };
+            //Act
+            var result = controller.PostTodoItem(item) as InvalidModelStateResult;
+            
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(InvalidModelStateResult));
+            Assert.AreEqual(3, controller.getItemCountInMockDB());
+        }
+
         [TestMethod()]
         public void DeleteTodoItemTest()
         {
-            Assert.Fail();
+            Assert.Inconclusive();
+
         }
     }
 
     public class StubTodoItemsControllers : TodoItemsController
     {
-        private List<TodoItem> stubItems;
-        private IDbSet<TodoItem> stubDbSet;
+        private List<TodoItem> mockItems;
+        private IDbSet<TodoItem> mockDbSet;
         
         public StubTodoItemsControllers()
         {
             var x = getTodoItems();
-            stubItems = getTodoItems();
-            var queryableItems = stubItems.AsQueryable();
-            stubDbSet = Substitute.For<DbSet<TodoItem>, IDbSet<TodoItem>>();
-            stubDbSet.Provider.Returns(queryableItems.Provider);
-            stubDbSet.Expression.Returns(queryableItems.Expression);
-            stubDbSet.ElementType.Returns(queryableItems.ElementType);
-            stubDbSet.GetEnumerator().Returns(queryableItems.GetEnumerator());
-            stubDbSet.Find(Arg.Any<int>()).Returns(callinfo =>
+            mockItems = getTodoItems();
+            var queryableItems = mockItems.AsQueryable();
+            mockDbSet = Substitute.For<DbSet<TodoItem>, IDbSet<TodoItem>>();
+            mockDbSet.Provider.Returns(queryableItems.Provider);
+            mockDbSet.Expression.Returns(queryableItems.Expression);
+            mockDbSet.ElementType.Returns(queryableItems.ElementType);
+            mockDbSet.GetEnumerator().Returns(queryableItems.GetEnumerator());
+            mockDbSet.Find(Arg.Any<int>()).Returns(callinfo =>
             {
                 object[] idValues = callinfo.Arg<object[]>();
                 int tempId = (int)idValues[0];
-                return stubItems.FirstOrDefault(p => p.Id == tempId);
+                return mockItems.FirstOrDefault(p => p.Id == tempId);
             });
 
-            stubDbSet.Add(Arg.Do<TodoItem>(arg => stubItems.Add(arg)));
+            mockDbSet.Add(Arg.Do<TodoItem>(arg => mockItems.Add(arg)));
 
 
                 db = Substitute.For<TodoMvcDbContext>();
-            db.TodoItems.Returns(stubDbSet);
+            db.TodoItems.Returns(mockDbSet);
         }
 
         public List<TodoItem> getTodoItems()
