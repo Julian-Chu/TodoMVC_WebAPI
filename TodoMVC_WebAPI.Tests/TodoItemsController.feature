@@ -18,4 +18,12 @@ Scenario: Retrieving all existing TodoItems
 	When all items are retrieved
 	Then Http status 200 should be returned
 	Then all items are returned
+
+@Post
+Scenario: Create a new TodoItem
+	Given a new TodoItem with description "test description Post"
+	When a Post request is made
+	Then Http status 201 should be returned
+	Then Response context contains "test description Post"
+	Then The response location header will be set to the resource location
 	
