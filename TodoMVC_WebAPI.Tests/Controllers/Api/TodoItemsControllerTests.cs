@@ -60,9 +60,16 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
         }
 
         [TestMethod()]
-        public void PostTodoItemTest()
+        public void PostTodoItem_Succeed()
         {
-            Assert.Fail();
+            //Assign
+            StubTodoItemsControllers controller = new StubTodoItemsControllers();
+            TodoItem item = new TodoItem() { Description = "test" };
+            //Act
+            var result = controller.PostTodoItem(item);
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(CreatedAtRouteNegotiatedContentResult<TodoItem>));
+            Assert.AreEqual(4 , controller.getItemCountInMockDB());
         }
 
         [TestMethod()]
@@ -76,7 +83,7 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
     {
         private IQueryable<TodoItem> stubItems;
         private IDbSet<TodoItem> stubDbSet;
-
+        
         public StubTodoItemsControllers()
         {
             var x = getTodoItems();
@@ -106,6 +113,11 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
                 new TodoItem { Id = 2, Description = "test description 2", Completed = false },
                 new TodoItem { Id = 3, Description="test description 3", Completed= false }
             };
+        }
+
+        public int getItemCountInMockDB()
+        {
+            return db.TodoItems.Count();
         }
     }
 }
