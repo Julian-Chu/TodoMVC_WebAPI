@@ -81,19 +81,19 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
 
     public class StubTodoItemsControllers : TodoItemsController
     {
-        private IQueryable<TodoItem> stubItems;
+        private List<TodoItem> stubItems;
         private IDbSet<TodoItem> stubDbSet;
         
         public StubTodoItemsControllers()
         {
             var x = getTodoItems();
-            stubItems = getTodoItems().AsQueryable();
-
+            stubItems = getTodoItems();
+            var queryableItems = stubItems.AsQueryable();
             stubDbSet = Substitute.For<DbSet<TodoItem>, IDbSet<TodoItem>>();
-            stubDbSet.Provider.Returns(stubItems.Provider);
-            stubDbSet.Expression.Returns(stubItems.Expression);
-            stubDbSet.ElementType.Returns(stubItems.ElementType);
-            stubDbSet.GetEnumerator().Returns(stubItems.GetEnumerator());
+            stubDbSet.Provider.Returns(queryableItems.Provider);
+            stubDbSet.Expression.Returns(queryableItems.Expression);
+            stubDbSet.ElementType.Returns(queryableItems.ElementType);
+            stubDbSet.GetEnumerator().Returns(queryableItems.GetEnumerator());
             stubDbSet.Find(Arg.Any<int>()).Returns(callinfo =>
             {
                 object[] idValues = callinfo.Arg<object[]>();
@@ -101,7 +101,10 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
                 return stubItems.FirstOrDefault(p => p.Id == tempId);
             });
 
-            db = Substitute.For<TodoMvcDbContext>();
+            stubDbSet.Add(Arg.Do<TodoItem>(arg => stubItems.Add(arg)));
+
+
+                db = Substitute.For<TodoMvcDbContext>();
             db.TodoItems.Returns(stubDbSet);
         }
 
