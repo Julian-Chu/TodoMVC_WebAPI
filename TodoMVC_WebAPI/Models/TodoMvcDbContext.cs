@@ -20,8 +20,7 @@ namespace TodoMVC_WebAPI.Models
         {
             modelBuilder.Entity<TodoItem>()
                 .Property(m => m.Description)
-                .IsRequired()
-                .HasMaxLength(255);
+                .IsRequired();
             
             base.OnModelCreating(modelBuilder);
         }

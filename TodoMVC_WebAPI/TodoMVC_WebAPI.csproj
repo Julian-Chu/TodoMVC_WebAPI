@@ -260,6 +260,10 @@
     <Compile Include="Migrations\201705081406377_CorrectColumnNameFromCompeletedToCompleted.Designer.cs">
       <DependentUpon>201705081406377_CorrectColumnNameFromCompeletedToCompleted.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201705102036319_ChangeDescritpionColumnToNvarchar50InTodoItemsTable.cs" />
+    <Compile Include="Migrations\201705102036319_ChangeDescritpionColumnToNvarchar50InTodoItemsTable.Designer.cs">
+      <DependentUpon>201705102036319_ChangeDescritpionColumnToNvarchar50InTodoItemsTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountBindingModels.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -355,6 +359,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201705081406377_CorrectColumnNameFromCompeletedToCompleted.resx">
       <DependentUpon>201705081406377_CorrectColumnNameFromCompeletedToCompleted.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201705102036319_ChangeDescritpionColumnToNvarchar50InTodoItemsTable.resx">
+      <DependentUpon>201705102036319_ChangeDescritpionColumnToNvarchar50InTodoItemsTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
