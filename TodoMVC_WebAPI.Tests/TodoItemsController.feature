@@ -19,6 +19,7 @@ Scenario: Retrieving all existing TodoItems
 	Then Http status 200 should be returned
 	Then all items are returned
 
+
 @Post
 Scenario: Create a new TodoItem
 	Given a new TodoItem with description "test description Post"
@@ -27,3 +28,7 @@ Scenario: Create a new TodoItem
 	Then Response context contains "test description Post"
 	Then The response location header will be set to the resource location
 	
+Scenario: Create a new TodoItem with invalidated model
+	Given a new TodoItem with description "test description Post tttttttttttttttttttttttttttttttttttttttttt"
+	When a Post request is made
+	Then Http status 400 should be returned

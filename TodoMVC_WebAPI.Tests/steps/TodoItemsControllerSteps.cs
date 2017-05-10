@@ -77,11 +77,15 @@ namespace TodoMVC_WebAPI.Tests.steps
                 case 201:
                     Assert.AreEqual(System.Net.HttpStatusCode.Created, response.StatusCode);
                     break;
+                case 400:
+                    Assert.AreEqual(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+                    break;
                 case 404:
                     Assert.AreEqual(System.Net.HttpStatusCode.NotFound, response.StatusCode);
                     break;
 
                 default:
+                    Assert.Fail();
                     break;
             }
         }
