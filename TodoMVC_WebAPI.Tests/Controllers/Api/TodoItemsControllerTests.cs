@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NSubstitute;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web.Http.Results;
-using TodoMVC_WebAPI.Models;
 using System.Net;
+using System.Web.Http.Results;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NSubstitute;
+using TodoMVC_WebAPI.Models;
 
 namespace TodoMVC_WebAPI.Controllers.Api.Tests
 {
@@ -64,6 +64,42 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
             var result = controller.PutTodoItem(id, item);
             //Assert
             Assert.AreEqual(HttpStatusCode.NoContent, ((StatusCodeResult)result).StatusCode);
+        }
+
+        [TestMethod]
+        public void PutTodoItem_InvalidModel_return_InvalidModelStateResult()
+        {
+            //Assign 
+            StubTodoItemsControllers controller = new StubTodoItemsControllers();
+            TodoItem item = new TodoItem()
+            {
+                Id = 1,
+                Description = "Put test with invalid model"
+            };
+            int id = 1;
+            //Act
+            controller.ModelState.AddModelError("invalid", "some error");
+            var result = controller.PutTodoItem(id, item);
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(InvalidModelStateResult));
+            Assert.IsTrue(((InvalidModelStateResult)result).ModelState["invalid"].Errors[0].ErrorMessage.Contains("error"));
+        }
+
+        [TestMethod]
+        public void PutTodoItem_IdDoesNotMatch_return_BadRequest()
+        {
+            //Assign
+            StubTodoItemsControllers controller = new StubTodoItemsControllers();
+            TodoItem item = new TodoItem()
+            {
+                Id = 2,
+                Description = "Put test"
+            };
+            int id = 1;
+            //Act
+            var result = controller.PutTodoItem(id, item);
+            //Assert
+            Assert.IsInstanceOfType(result, typeof(BadRequestResult));
         }
 
         [TestMethod()]
