@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Formatting;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
@@ -69,6 +70,11 @@ namespace TodoMVC_WebAPI.Tests.steps
                 case 201:
                     Assert.AreEqual(System.Net.HttpStatusCode.Created, response.StatusCode);
                     break;
+
+                case 204:
+                    Assert.AreEqual(System.Net.HttpStatusCode.NoContent, response.StatusCode);
+                    break;
+
 
                 case 400:
                     Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
@@ -175,5 +181,20 @@ namespace TodoMVC_WebAPI.Tests.steps
 
             Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
         }
+
+        [When(@"a Put request is made")]
+        public void WhenAPutRequestIsMade()
+        {
+            int Id = ScenarioContext.Current.Get<int>("Id");
+            HttpResponseMessage response = client
+                .PutAsync<TodoItem>(
+                $"{localUrl}/TodoItems/{Id}",
+                new TodoItem { Id = Id, Description = "Put", Completed = false },
+                new JsonMediaTypeFormatter()
+                ).Result;
+
+            ScenarioContext.Current.Set<HttpResponseMessage>(response, "response");
+        }
+
     }
 }
