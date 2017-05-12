@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Http.Results;
 using TodoMVC_WebAPI.Models;
+using System.Net;
 
 namespace TodoMVC_WebAPI.Controllers.Api.Tests
 {
@@ -53,9 +54,16 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
         }
 
         [TestMethod()]
-        public void PutTodoItemTest()
+        public void PutTodoItem_Succeed()
         {
-            Assert.Inconclusive();
+            //Assign 
+            StubTodoItemsControllers controller = new StubTodoItemsControllers();
+            TodoItem item = new TodoItem() { Id = 1, Description = "Put test" };
+            int id = 1;
+            //Act
+            var result = controller.PutTodoItem(id, item);
+            //Assert
+            Assert.AreEqual(HttpStatusCode.NoContent, ((StatusCodeResult)result).StatusCode);
         }
 
         [TestMethod()]
