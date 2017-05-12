@@ -3,7 +3,6 @@ using NSubstitute;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Web.Http;
 using System.Web.Http.Results;
 using TodoMVC_WebAPI.Models;
 
@@ -35,7 +34,7 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
             int id = 1;
             //Act
             var item = controller.GetTodoItem(id) as OkNegotiatedContentResult<TodoItem>;
-            
+
             //Assert
             Assert.IsInstanceOfType(item, typeof(OkNegotiatedContentResult<TodoItem>));
             Assert.IsTrue(item.Content.Description.Contains("test description"));
@@ -69,7 +68,7 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
             var result = controller.PostTodoItem(item);
             //Assert
             Assert.IsInstanceOfType(result, typeof(CreatedAtRouteNegotiatedContentResult<TodoItem>));
-            Assert.AreEqual(4 , controller.getItemCountInMockDB());
+            Assert.AreEqual(4, controller.getItemCountInMockDB());
         }
 
         [TestMethod]
@@ -81,7 +80,7 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
             TodoItem item = new TodoItem() { Description = "test" };
             //Act
             var result = controller.PostTodoItem(item) as InvalidModelStateResult;
-            
+
             //Assert
             Assert.IsInstanceOfType(result, typeof(InvalidModelStateResult));
             Assert.AreEqual(3, controller.getItemCountInMockDB());
@@ -91,7 +90,6 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
         public void DeleteTodoItemTest()
         {
             Assert.Inconclusive();
-
         }
     }
 
@@ -99,7 +97,7 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
     {
         private List<TodoItem> mockItems;
         private IDbSet<TodoItem> mockDbSet;
-        
+
         public StubTodoItemsControllers()
         {
             var x = getTodoItems();
@@ -119,8 +117,7 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
 
             mockDbSet.Add(Arg.Do<TodoItem>(arg => mockItems.Add(arg)));
 
-
-                db = Substitute.For<TodoMvcDbContext>();
+            db = Substitute.For<TodoMvcDbContext>();
             db.TodoItems.Returns(mockDbSet);
         }
 

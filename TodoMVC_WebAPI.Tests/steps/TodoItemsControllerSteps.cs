@@ -1,9 +1,10 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Newtonsoft.Json;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 using TechTalk.SpecFlow;
 using TodoMVC_WebAPI.Models;
 
@@ -17,7 +18,7 @@ namespace TodoMVC_WebAPI.Tests.steps
         private readonly string localUrl = "http://localhost:2000/api";
 
         private TodoMvcDbContext context;
-        
+
         [BeforeScenario]
         public void ClearAndAddNewDataIntoTestDB()
         {
@@ -36,28 +37,18 @@ namespace TodoMVC_WebAPI.Tests.steps
         {
             using (context = new TodoMvcDbContext("TestDbConnection"))
             {
-                context.Database.ExecuteSqlCommand("TRUNCATE TABLE TodoItems");       
+                context.Database.ExecuteSqlCommand("TRUNCATE TABLE TodoItems");
             }
         }
 
-        [Given(@"id equals (.*) for existing description")]
-        public void GivenIdEqualsForExistingDescription(int id)
-        {
-            ScenarioContext.Current.Set<int>(id, "id");
-        }
 
-        [Given(@"id equals (.*) for non-existing description")]
-        public void GivenIdEqualsForNon_ExistingDescription(int id)
-        {
-            ScenarioContext.Current.Set<int>(id, "id");
-        }
 
         [When(@"it is retrieved")]
         public void WhenItIsRetrieved()
         {
-            int id = ScenarioContext.Current.Get<int>("id");
+            int Id = ScenarioContext.Current.Get<int>("Id");
 
-            var response = client.GetAsync($"{localUrl}/TodoItems/{id}").Result;
+            var response = client.GetAsync($"{localUrl}/TodoItems/{Id}").Result;
 
             ScenarioContext.Current.Set<HttpResponseMessage>(response, "response");
             //ScenarioContext.Current.Set<bool>(false, "IsGetAllItem");
@@ -74,12 +65,15 @@ namespace TodoMVC_WebAPI.Tests.steps
                 case 200:
                     Assert.AreEqual(System.Net.HttpStatusCode.OK, response.StatusCode);
                     break;
+
                 case 201:
                     Assert.AreEqual(System.Net.HttpStatusCode.Created, response.StatusCode);
                     break;
+
                 case 400:
-                    Assert.AreEqual(System.Net.HttpStatusCode.NotFound, response.StatusCode);
+                    Assert.AreEqual(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
                     break;
+
                 case 404:
                     Assert.AreEqual(System.Net.HttpStatusCode.NotFound, response.StatusCode);
                     break;
@@ -100,9 +94,21 @@ namespace TodoMVC_WebAPI.Tests.steps
             Assert.IsTrue(item.Description.Contains(description));
         }
 
-        [Given(@"existing issues")]
-        public void GivenExistingIssues()
+        [Given(@"existing TodoItems")]
+        public void GivenExistingTodoItems()
         {
+        }
+
+        [Given(@"a existing TodoItem with Id (.*)")]
+        public void GivenAExistingTodoItemWithId(int id)
+        {
+            ScenarioContext.Current.Set(id, "Id");
+        }
+
+        [Given(@"a non-existing TodoItem with Id (.*)")]
+        public void GivenANon_ExistingTodoItemWithId(int id)
+        {
+            ScenarioContext.Current.Set(id, "Id");
         }
 
         [When(@"all items are retrieved")]
@@ -137,7 +143,7 @@ namespace TodoMVC_WebAPI.Tests.steps
             var item = ScenarioContext.Current.Get<TodoItem>("item");
 
             var response = client
-                .PostAsync($"{localUrl}/TodoItems", new StringContent(JsonConvert.SerializeObject(item).ToString(),Encoding.UTF8,"application/json"))
+                .PostAsync($"{localUrl}/TodoItems", new StringContent(JsonConvert.SerializeObject(item).ToString(), Encoding.UTF8, "application/json"))
                 .Result;
             ScenarioContext.Current.Set<HttpResponseMessage>(response, "response");
         }
@@ -146,12 +152,28 @@ namespace TodoMVC_WebAPI.Tests.steps
         public void ThenTheResponseLocationHeaderWillBeSetToTheResourceLocation()
         {
             var response = ScenarioContext.Current.Get<HttpResponseMessage>("response");
-            var item =  JsonConvert.DeserializeObject<TodoItem>(response.Content.ReadAsStringAsync().Result);
+            var item = JsonConvert.DeserializeObject<TodoItem>(response.Content.ReadAsStringAsync().Result);
 
             Assert.AreEqual($"{localUrl}/TodoItems/{item.Id}", response.Headers.Location.ToString());
-
         }
 
+        [When(@"a Delete request is made")]
+        public void WhenADeleteRequestIsMade()
+        {
+            int Id = ScenarioContext.Current.Get<int>("Id");
+            HttpResponseMessage response = client.DeleteAsync($"{localUrl}/TodoItems/{Id}").Result;
 
+            ScenarioContext.Current.Set<HttpResponseMessage>(response, "response");
+        }
+
+        [Then(@"the TodoItem should be removed")]
+        public void ThenTheTodoItemShouldBeRemoved()
+        {
+            int Id = ScenarioContext.Current.Get<int>("Id");
+
+            HttpResponseMessage response = client.GetAsync($"{localUrl}/TodoItems/{Id}").Result;
+
+            Assert.AreEqual(HttpStatusCode.NotFound, response.StatusCode);
+        }
     }
 }
