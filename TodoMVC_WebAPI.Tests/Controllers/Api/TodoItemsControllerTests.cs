@@ -131,9 +131,28 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
         }
 
         [TestMethod()]
-        public void DeleteTodoItemTest()
+        public void DeleteTodoItem_Succeed()
         {
-            Assert.Inconclusive();
+            //Assign 
+            StubTodoItemsControllers controller = new StubTodoItemsControllers();
+            int id = 1;
+            //Act
+            var result = controller.DeleteTodoItem(id) as OkNegotiatedContentResult<TodoItem>;
+            //Assert
+            Assert.IsNotNull(result);
+            Assert.AreEqual(id, result.Content.Id);
+        }
+
+        [TestMethod]
+        public void DeleteTodoItem_itemDidNotExist_return_NotFound()
+        {
+            //Assign 
+            StubTodoItemsControllers controller = new StubTodoItemsControllers();
+            int id = 100;
+            //Act
+            var result = controller.DeleteTodoItem(id) as NotFoundResult;
+            //Assert
+            Assert.IsNotNull(result);
         }
     }
 

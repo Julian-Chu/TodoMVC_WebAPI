@@ -8,10 +8,16 @@ using TodoMVC_WebAPI.Models;
 
 namespace TodoMVC_WebAPI.Controllers.Api
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class TodoItemsController : ApiController
     {
         protected TodoMvcDbContext db = new TodoMvcDbContext("TestDbConnection");
-
+        /// <summary>
+        /// Get all todos
+        /// </summary>
+        /// <returns></returns>
         // GET: api/TodoItems
         public IQueryable<TodoItem> GetTodoItems()
         {
