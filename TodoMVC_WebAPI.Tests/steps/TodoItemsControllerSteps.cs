@@ -11,6 +11,13 @@ using TodoMVC_WebAPI.Models;
 
 namespace TodoMVC_WebAPI.Tests.steps
 {
+
+    public class JsonTodoIems
+    {
+        public TodoItem todoItem { get; set; }
+    }
+
+
     [Binding]
     public class TodoItemsControllerSteps
     {
@@ -91,11 +98,20 @@ namespace TodoMVC_WebAPI.Tests.steps
         }
 
         [Then(@"Response context contains ""(.*)""")]
-        public void ThenResponseContextContains(string description)
+        async public void ThenResponseContextContains(string description)
         {
-            TodoItem item;
             var response = ScenarioContext.Current.Get<HttpResponseMessage>("response");
-            item = response.Content.ReadAsAsync<TodoItem>().Result;
+            //var jsonString = await response.Content.ReadAsStringAsync();
+            TodoItem item = JsonConvert.DeserializeObject<TodoItem>(await response.Content.ReadAsStringAsync());
+
+            //TodoItem item = null;
+            //JsonTodoIems item = null;
+            //var task = response.Content.ReadAsStringAsync().ContinueWith((Response) =>
+            //{
+            //    var jsonString = Response.Result;
+            //    item = JsonConvert.DeserializeObject<TodoItem>(jsonString);
+            //});
+            //task.Wait();
 
             Assert.IsTrue(item.Description.Contains(description));
         }
@@ -139,14 +155,15 @@ namespace TodoMVC_WebAPI.Tests.steps
         [Given(@"a new TodoItem with description ""(.*)""")]
         public void GivenANewTodoItemWithDescription(string desc)
         {
-            TodoItem item = new TodoItem { Description = desc };
-            ScenarioContext.Current.Set(item, "item");
+            //TodoItem item = new TodoItem { Description = desc };
+            List<TodoItem> items = new List<TodoItem>() { new TodoItem { Description = desc } };
+            ScenarioContext.Current.Set(items, "items");
         }
 
         [When(@"a Post request is made")]
         public void WhenAPostRequestIsMade()
         {
-            var item = ScenarioContext.Current.Get<TodoItem>("item");
+            var item = ScenarioContext.Current.Get<List<TodoItem>>("items");
 
             var response = client
                 .PostAsync($"{localUrl}/TodoItems", new StringContent(JsonConvert.SerializeObject(item).ToString(), Encoding.UTF8, "application/json"))
@@ -155,10 +172,10 @@ namespace TodoMVC_WebAPI.Tests.steps
         }
 
         [Then(@"The response location header will be set to the resource location")]
-        public void ThenTheResponseLocationHeaderWillBeSetToTheResourceLocation()
+        async public void ThenTheResponseLocationHeaderWillBeSetToTheResourceLocation()
         {
             var response = ScenarioContext.Current.Get<HttpResponseMessage>("response");
-            var item = JsonConvert.DeserializeObject<TodoItem>(response.Content.ReadAsStringAsync().Result);
+            var item = JsonConvert.DeserializeObject<TodoItem>(await response.Content.ReadAsStringAsync());
 
             Assert.AreEqual($"{localUrl}/TodoItems/{item.Id}", response.Headers.Location.ToString());
         }

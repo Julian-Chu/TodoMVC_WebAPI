@@ -103,27 +103,34 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
         }
 
         [TestMethod()]
-        public void PostTodoItem_Succeed()
+        public void PostTodoItems_Succeed()
         {
             //Assign
             StubTodoItemsControllers controller = new StubTodoItemsControllers();
-            TodoItem item = new TodoItem() { Description = "test" };
+            TodoItem[] items = new TodoItem[2] {
+                new TodoItem { Id = 1, Description="1", Completed = true },
+                new TodoItem { Id = 2, Description="2", Completed = true}
+            };
+
             //Act
-            var result = controller.PostTodoItem(item);
+            var result = controller.PostTodoItems(items);
             //Assert
-            Assert.IsInstanceOfType(result, typeof(CreatedAtRouteNegotiatedContentResult<TodoItem>));
-            Assert.AreEqual(4, controller.getItemCountInMockDB());
+            Assert.IsInstanceOfType(result, typeof(CreatedAtRouteNegotiatedContentResult<TodoItem[]>));
+            Assert.AreEqual(2, controller.getItemCountInMockDB());
         }
 
         [TestMethod]
-        public void PostTodoItem_invalidedModel_Return_InvalidModelStateResult()
+        public void PostTodoItems_invalidedModel_Return_InvalidModelStateResult()
         {
             //Assign
             StubTodoItemsControllers controller = new StubTodoItemsControllers();
             controller.ModelState.AddModelError("invalid", "Invalid Model");
-            TodoItem item = new TodoItem() { Description = "test" };
+            TodoItem[] items = new TodoItem[2] {
+                new TodoItem { Id = 1, Description="1", Completed = true },
+                new TodoItem { Id = 2, Description="2", Completed = true}
+            };
             //Act
-            var result = controller.PostTodoItem(item) as InvalidModelStateResult;
+            var result = controller.PostTodoItems(items) as InvalidModelStateResult;
 
             //Assert
             Assert.IsInstanceOfType(result, typeof(InvalidModelStateResult));
@@ -182,6 +189,14 @@ namespace TodoMVC_WebAPI.Controllers.Api.Tests
 
             db = Substitute.For<TodoMvcDbContext>();
             db.TodoItems.Returns(mockDbSet);
+        }
+
+        protected override void ClearTodoItemsTable()
+        {
+            if (mockItems.Count != 0)
+            {
+                mockItems.Clear();
+            }
         }
 
         public List<TodoItem> getTodoItems()

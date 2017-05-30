@@ -23,7 +23,11 @@ namespace TodoMVC_WebAPI.Controllers.Api
         {
             return db.TodoItems;
         }
-
+        /// <summary>
+        /// // todo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // GET: api/TodoItems/5
         [ResponseType(typeof(TodoItem))]
         public IHttpActionResult GetTodoItem(int id)
@@ -37,6 +41,12 @@ namespace TodoMVC_WebAPI.Controllers.Api
             return Ok(todoItem);
         }
 
+        /// <summary>
+        /// // todo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="todoItem"></param>
+        /// <returns></returns>
         // PUT: api/TodoItems/5
         [ResponseType(typeof(void))]
         public IHttpActionResult PutTodoItem(int id, TodoItem todoItem)
@@ -72,21 +82,41 @@ namespace TodoMVC_WebAPI.Controllers.Api
             return StatusCode(HttpStatusCode.NoContent);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="todoItems"></param>
+        /// <returns></returns>
         // POST: api/TodoItems
-        [ResponseType(typeof(TodoItem))]
-        public IHttpActionResult PostTodoItem(TodoItem todoItem)
+        [ResponseType(typeof(TodoItem[]))]
+        [HttpPost]
+        public IHttpActionResult PostTodoItems(TodoItem[] todoItems)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            db.TodoItems.Add(todoItem);
+            ClearTodoItemsTable();
+            foreach (var item in todoItems)
+            {
+                db.TodoItems.Add(item);
+            }
             db.SaveChanges();
 
-            return CreatedAtRoute("DefaultApi", new { id = todoItem.Id }, todoItem);
+            return CreatedAtRoute("DefaultApi", new { }, todoItems);
         }
 
+        virtual protected void ClearTodoItemsTable()
+        {
+            db.Database.ExecuteSqlCommand("Truncate Table TodoItems");
+        }
+
+        /// <summary>
+        /// // todo
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         // DELETE: api/TodoItems/5
         [ResponseType(typeof(TodoItem))]
         public IHttpActionResult DeleteTodoItem(int id)

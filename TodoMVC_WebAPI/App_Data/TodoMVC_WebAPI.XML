@@ -492,5 +492,34 @@
             </summary>
             <returns></returns>
         </member>
+        <member name="M:TodoMVC_WebAPI.Controllers.Api.TodoItemsController.GetTodoItem(System.Int32)">
+            <summary>
+            // todo
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TodoMVC_WebAPI.Controllers.Api.TodoItemsController.PutTodoItem(System.Int32,TodoMVC_WebAPI.Models.TodoItem)">
+            <summary>
+            // todo
+            </summary>
+            <param name="id"></param>
+            <param name="todoItem"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TodoMVC_WebAPI.Controllers.Api.TodoItemsController.PostTodoItems(TodoMVC_WebAPI.Models.TodoItem[])">
+            <summary>
+            
+            </summary>
+            <param name="todoItems"></param>
+            <returns></returns>
+        </member>
+        <member name="M:TodoMVC_WebAPI.Controllers.Api.TodoItemsController.DeleteTodoItem(System.Int32)">
+            <summary>
+            // todo
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
     </members>
 </doc>
